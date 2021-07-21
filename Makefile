@@ -1,5 +1,5 @@
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re debug dvs
 
 NAME = philo
 

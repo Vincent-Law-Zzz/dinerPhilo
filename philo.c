@@ -55,23 +55,16 @@ void	ft_validation(char **argv)
 	}
 }
 
-void* helloWorld(__unused void *args)
+void* helloWorld(void *args)
 {
+	int i = (int)args;
 	while(1)
 	{
-		printf("Im working 1\n");
+		printf("Im working %d\n", i);
 		usleep(200);
 	}
 }
 
-void* helloWorld2(__unused void *args)
-{
-	while(1)
-	{
-		printf("Im working 2\n");
-		usleep(200);
-	}
-}
 int	main(int argc, char** argv)
 {
 	if (argc != 5 && argc != 6)
@@ -81,12 +74,18 @@ int	main(int argc, char** argv)
 	pthread_t thread;
 	// pthread_t thread2;
     int status;
-    int status2;
- 
-    status = pthread_create(&thread, NULL, helloWorld, NULL);
-	status2 = pthread_create(&thread, NULL, helloWorld2, NULL);
+    // int status2;
+	
+    status = pthread_create(&thread, NULL, helloWorld, (void*)(1));
+	status = pthread_create(&thread, NULL, helloWorld, (void*)(2));
+	status = pthread_create(&thread, NULL, helloWorld, (void*)(3));
+	status = pthread_create(&thread, NULL, helloWorld, (void*)(4));
+	status = pthread_create(&thread, NULL, helloWorld, (void*)(5));
+	status = pthread_create(&thread, NULL, helloWorld, (void*)(6));
+	status = pthread_create(&thread, NULL, helloWorld, (void*)(7));
+	// status = pthread_create(&thread, NULL, helloWorld2, NULL);
 	status = pthread_join(thread, NULL);
-	status2 = pthread_create(&thread, NULL, helloWorld2, NULL);
-	status2 = pthread_join(thread, NULL);
+	// status = pthread_create(&thread, NULL, helloWorld2, NULL);
+	// status = pthread_join(thread, NULL);
 	return (0);
 }

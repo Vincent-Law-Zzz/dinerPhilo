@@ -5,6 +5,25 @@
 # include <stdlib.h>
 # include <pthread.h>
 
+typedef struct s_philo
+{
+	pthread_mutex_t	*left_hand;
+	pthread_mutex_t	*right_hand;
+	pthread_t		*thread;
+	int				meal_time;
+	int				count_of_meals;
+}	t_philo;
+
+typedef struct s_diner
+{
+	t_philo			*philo;
+	pthread_mutex_t	*fork;
+	int				number_of_philos;
+	int				time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				lim_of_meals;
+}	t_diner;
 
 int	ft_atoi(const char *str);
 #endif
