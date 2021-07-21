@@ -17,11 +17,15 @@ typedef struct s_philo
 typedef struct s_diner
 {
 	t_philo			*philo;
+	pthread_t		thread;
 	pthread_mutex_t	*fork;
+	pthread_mutex_t	stop;
 	int				number_of_philos;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
+	int				start_time;
+	int				current_time;
 	int				lim_of_meals;
 }	t_diner;
 
