@@ -7,13 +7,18 @@
 # include <sys/time.h>
 # include <string.h>
 
+# define EATING 1
+# define SLEEPING 2
+# define THINKING 3
+# define FINISH 0
+
 typedef struct s_philo
 {
 	void			*diner;
 	pthread_mutex_t	*left_hand;
 	pthread_mutex_t	*right_hand;
-	// int				time_to_die;
-	long long			meal_time;
+	int				status;
+	long long		meal_time;
 	int				count_of_meals;
 	int				id;
 }	t_philo;
