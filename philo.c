@@ -27,20 +27,24 @@ int	ft_isnum(char *str)
 	return (1);
 }
 
-void	ft_validation(char **argv)
+int	ft_validation(char **argv)
 {
 	int	i;
+	int num;
 
 	i = 1;
+	num = 0;
 	while (argv[i])
 	{
-		if (!ft_isnum(argv[i]))
+		num = ft_atoi(argv[i]);
+		if (!ft_isnum(argv[i])|| num < 0)
 		{
 			write(1, "Error\n", 7);
-			exit(0);
+			return (1);
 		}
 		i++;
 	}
+	return (0);
 }
 
 void	ft_usleep(useconds_t time)
@@ -55,19 +59,24 @@ void	take_a_fork(t_diner *diner, t_philo *philo)
 {
 	pthread_mutex_lock(philo->left_hand);
 	pthread_mutex_lock(&diner->death);
-	printf("[%lld ms philosopher № %d has taken a fork]\n",ft_get_time() - diner->start_time ,philo->id);
+	printf("[%lld ms philosopher № %d has taken a fork]\n",ft_get_time() - diner->start_time ,philo->id + 1);
 	pthread_mutex_unlock(&diner->death);
 	pthread_mutex_lock(philo->right_hand);
 	pthread_mutex_lock(&diner->death);
-	printf("[%lld ms philosopher № %d has taken a fork]\n",ft_get_time() - diner->start_time ,philo->id);
+	printf("[%lld ms philosopher № %d has taken a fork]\n",ft_get_time() - diner->start_time ,philo->id + 1);
 	pthread_mutex_unlock(&diner->death);
 }
 
 void	eating(t_diner *diner, t_philo *philo)
 {
 	philo->status = EATING;
+	if (diner->lim_of_meals == philo->count_of_meals)
+	{
+		philo->status = FINISH;
+		return ;
+	}
 	pthread_mutex_lock(&diner->death);
-	printf("[%lld ms philosopher № %d is eating]\n",ft_get_time() - diner->start_time,philo->id);
+	printf("[%lld ms philosopher № %d is eating]\n",ft_get_time() - diner->start_time,philo->id + 1);
 	pthread_mutex_unlock(&diner->death);
 	ft_usleep(diner->time_to_eat);
 	philo->meal_time = ft_get_time() - diner->start_time + diner->time_to_eat;
@@ -76,14 +85,17 @@ void	eating(t_diner *diner, t_philo *philo)
 	if (diner->lim_of_meals && philo->count_of_meals < diner->lim_of_meals)
 		philo->count_of_meals = philo->count_of_meals + 1;
 	if (diner->lim_of_meals == philo->count_of_meals)
+	{
 		philo->status = FINISH;
+		return ;
+	}
 }
 
 void	sleeping(t_diner *diner, t_philo *philo)
 {
 	philo->status = SLEEPING;
 	pthread_mutex_lock(&diner->death);
-	printf("[%lld ms philosopher № %d is sleeping]\n",ft_get_time() - diner->start_time ,philo->id);
+	printf("[%lld ms philosopher № %d is sleeping]\n",ft_get_time() - diner->start_time ,philo->id + 1);
 	pthread_mutex_unlock(&diner->death);
 	ft_usleep(diner->time_to_sleep);
 }
@@ -95,7 +107,7 @@ void	thinking(t_diner *diner, t_philo *philo)
 	philo->status = THINKING;
 	pthread_mutex_lock(&diner->death);
 	time = ft_get_time() - diner->start_time;
-	printf("[%lld ms philosopher № %d is thinking]\n",time ,philo->id);
+	printf("[%lld ms philosopher № %d is thinking]\n",time ,philo->id + 1);
 	pthread_mutex_unlock(&diner->death);
 }
 
@@ -109,7 +121,7 @@ void	*philo_processing(void *args)
 		take_a_fork(philo->diner,philo);
 		eating(philo->diner, philo);
 		if (philo->status == FINISH)
-			break;
+			break ;
 		sleeping(philo->diner,philo);
 		thinking(philo->diner,philo);
 	}
@@ -124,7 +136,7 @@ void	parsing(t_diner *diner,char **argv, int argc)
 	if (argc == 6)
 		diner->lim_of_meals =  ft_atoi(argv[5]);
 	else
-		diner->lim_of_meals = 0;
+		diner->lim_of_meals = -1;
 }
 
 
@@ -173,9 +185,9 @@ void	ft_checker(t_diner *diner)
 		if (philo_may_die(diner,&diner->philo[i]))
 			exit(0);
 		i++;
-		if (diner->philo[i].status == FINISH)
+		if ( diner->lim_of_meals != -1 && diner->philo[i].status == FINISH)
 			counter++;
-		if (diner->number_of_philos && counter == diner->number_of_philos)
+		if (diner->lim_of_meals == 0 || counter == diner->number_of_philos)
 			e = 0;
 		if (i == diner->number_of_philos)
 		{
@@ -189,12 +201,11 @@ int	main(int argc, char** argv)
 {
 	t_diner *diner;
 	int		flag;
-	if (argc != 5 && argc != 6)
+	if (ft_atoi(argv[1]) == 0 || (argc != 5 && argc != 6) || ft_validation(argv) == 1)
 	{
 		write(1, "Error\n", 7);
 		exit(0);
 	}
-	ft_validation(argv);
 	diner = malloc(sizeof(t_diner));
 	parsing(diner,argv,argc);
 	flag = diner_init(diner);
