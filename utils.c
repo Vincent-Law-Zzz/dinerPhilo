@@ -1,4 +1,3 @@
-
 #include "philo.h"
 
 int	ft_atoi(const char *str)
@@ -58,6 +57,7 @@ int	ft_isnum(char *str)
 void	ft_usleep(useconds_t time)
 {
 	unsigned long long	t;
+
 	t = ft_get_time();
 	while (ft_get_time() - t < time)
 		usleep(50);

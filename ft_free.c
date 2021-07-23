@@ -1,14 +1,13 @@
-
 #include "philo.h"
 
-void fork_free(pthread_mutex_t *fork, int num)
+void	fork_free(pthread_mutex_t *fork, int num)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (fork)
 	{
-		while(i < num)
+		while (i < num)
 		{
 			pthread_mutex_destroy(&fork[i]);
 			i++;

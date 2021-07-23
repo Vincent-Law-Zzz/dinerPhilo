@@ -1,27 +1,27 @@
-
 #include "philo.h"
 
-long long ft_get_time()
+long long	ft_get_time(void)
 {
 	struct timeval	current_time;
 	long long		res;
 
 	gettimeofday(&current_time, NULL);
-	res = current_time.tv_sec * 1000 + current_time.tv_usec/1000;
+	res = current_time.tv_sec * 1000 + current_time.tv_usec / 1000;
 	return (res);
 }
 
-int	philo_may_die(t_diner *diner,t_philo *philo)
+int	philo_may_die(t_diner *diner, t_philo *philo)
 {
-	long long current_time;
-	long long time;
+	long long	current_time;
+	long long	time;
 
 	time = ft_get_time();
 	current_time = time - diner->start_time - philo->meal_time;
 	if (current_time > diner->time_to_die)
 	{
 		pthread_mutex_lock(&diner->death);
-		printf("[%lld ms philosopher № %d is dead]\n",time - diner->start_time ,philo->id + 1);
+		printf("[%lld ms philosopher № %d is dead]\n", \
+			time - diner->start_time, philo->id + 1);
 		return (1);
 	}
 	return (0);
