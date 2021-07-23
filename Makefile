@@ -7,7 +7,8 @@ CC = gcc
 
 CFLAGS = -Wall -Wextra -Werror
 
-SRCS = 	philo.c ft_atoi.c gettime.c
+SRCS = 	main.c utils.c gettime.c philosopher.c ft_free.c \
+		parsing.c
 
 OBJS = ${SRCS:.c=.o}
 

@@ -7,6 +7,7 @@
 # include <sys/time.h>
 # include <string.h>
 
+# define MISSING -1
 # define EATING 1
 # define SLEEPING 2
 # define THINKING 3
@@ -38,7 +39,19 @@ typedef struct s_diner
 	int				lim_of_meals;
 }	t_diner;
 
-long long ft_get_time();
-int	philo_may_die(t_diner *diner,t_philo *philo);
-int	ft_atoi(const char *str);
+long long	ft_get_time();
+int			philo_may_die(t_diner *diner,t_philo *philo);
+int			ft_atoi(const char *str);
+void		pthread_inits(t_diner *diner);
+int			diner_init(t_diner *diner);
+void		forks_init(t_diner *diner, t_philo *philo);
+void		parsing(t_diner *diner,char **argv, int argc);
+void		*philo_processing(void *args);
+void		ft_usleep(useconds_t time);
+int			ft_validation(char **argv);
+int			ft_free(t_diner *diner);
+void		fork_free(pthread_mutex_t *fork, int num);
+int			ft_isnum(char *str);
+
+
 #endif

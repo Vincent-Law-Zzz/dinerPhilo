@@ -22,7 +22,7 @@ int	philo_may_die(t_diner *diner,t_philo *philo)
 	{
 		pthread_mutex_lock(&diner->death);
 		printf("[%lld ms philosopher № %d is dead]\n",time - diner->start_time ,philo->id + 1);
-		exit(0);
+		return (1);
 	}
 	return (0);
 }
