@@ -73,6 +73,10 @@ void	eating(t_diner *diner, t_philo *philo)
 	philo->meal_time = ft_get_time() - diner->start_time + diner->time_to_eat;
 	pthread_mutex_unlock(philo->right_hand);
 	pthread_mutex_unlock(philo->left_hand);
+	if (diner->lim_of_meals && philo->count_of_meals < diner->lim_of_meals)
+		philo->count_of_meals = philo->count_of_meals + 1;
+	if (diner->lim_of_meals == philo->count_of_meals)
+		philo->status = FINISH;
 }
 
 void	sleeping(t_diner *diner, t_philo *philo)
@@ -98,18 +102,16 @@ void	thinking(t_diner *diner, t_philo *philo)
 void	*philo_processing(void *args)
 {
 	t_philo *philo;
-	int i;
 
 	philo = (t_philo *)args;
-	i = 1;
-	while(i)
+	while(1)
 	{
 		take_a_fork(philo->diner,philo);
 		eating(philo->diner, philo);
+		if (philo->status == FINISH)
+			break;
 		sleeping(philo->diner,philo);
 		thinking(philo->diner,philo);
-		if (philo->status == FINISH)
-			i = 0;
 	}
 	return (NULL);
 }
@@ -142,11 +144,13 @@ int	diner_init(t_diner *diner)
 	diner->thread = (pthread_t *)malloc(sizeof(pthread_t) * diner->number_of_philos);
 	diner->philo = (t_philo *)malloc(sizeof(t_philo) * diner->number_of_philos);
 	diner->fork = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * diner->number_of_philos);
+	diner->start_time = ft_get_time();
 	while (i < diner->number_of_philos)
 	{
 		diner->philo[i].id = i;
 		diner->philo[i].diner = diner;
-		diner->philo[i].meal_time = 1; 
+		diner->philo[i].meal_time = 1;
+		diner->philo[i].count_of_meals = 0;
 		forks_init(diner,&diner->philo[i]);
 		pthread_mutex_init(&diner->fork[i], NULL);
 		i++;
@@ -158,15 +162,26 @@ int	diner_init(t_diner *diner)
 void	ft_checker(t_diner *diner)
 {
 	int	i;
+	int e;
+	int counter;
 
 	i = 0;
-	while (1)
+	e = 1;
+	counter = 0;
+	while (e)
 	{
 		if (philo_may_die(diner,&diner->philo[i]))
 			exit(0);
 		i++;
+		if (diner->philo[i].status == FINISH)
+			counter++;
+		if (diner->number_of_philos && counter == diner->number_of_philos)
+			e = 0;
 		if (i == diner->number_of_philos)
+		{
 			i = 0;
+			counter = 0;
+		}
 	}
 }
 
@@ -184,12 +199,11 @@ int	main(int argc, char** argv)
 	parsing(diner,argv,argc);
 	flag = diner_init(diner);
 	int i = 0;
-	diner->start_time = ft_get_time();
 	while(i < diner->number_of_philos)
 	{
 		pthread_create(&diner->thread[i],NULL,philo_processing,(void *)(&diner->philo[i]));
 		pthread_detach(diner->thread[i]);
-		usleep(10);
+		usleep(50);
 		i++;
 	}
 	ft_checker(diner);
